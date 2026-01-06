@@ -1,0 +1,70 @@
+﻿name: MLOps CI/CD manifest
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Installer dépendances
+        run: |
+          pip install -U pip
+          pip uninstall -y dvc pathspec
+          pip install "pathspec==0.11.2"
+          pip install dvc pandas numpy scikit-learn joblib
+
+      - name: Afficher le DAG DVC
+        run: dvc dag
+
+      - name: Exécuter pipeline ML via DVC
+        run: dvc repro
+
+      - name: Vérifier métriques (Quality Gate F1)
+        run: |
+          python - << 'EOF'
+          import json
+          import os
+          path = "reports/metrics.json"
+          if not os.path.exists(path):
+              raise SystemExit(f"Erreur : {path} introuvable")
+          with open(path, "r") as f:
+              metrics = json.load(f)
+          f1 = float(metrics.get("f1", 0.0))
+          print(f"F1 detecte : {f1}")
+          if f1 < 0.70:
+              raise SystemExit(f"ECHEC : F1 insuffisant (seuil 0.70)")
+          print("SUCCES : Quality Gate validee")
+          EOF
+
+      - name: Upload artefacts ML
+        uses: actions/upload-artifact@v4
+        with:
+          name: ml-artifacts
+          path: |
+            models/
+            registry/
+            reports/
+
+  cd:
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Télécharger artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ml-artifacts
+          path: release_artifacts
+      - name: CD simulé
+        run: |
+          echo "=== Phase CD (simulée) ==="
+          echo "Secret (demo) : ${{ secrets.DEMO_SECRET }}"
+          ls -R release_artifacts
