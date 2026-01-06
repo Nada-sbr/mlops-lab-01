@@ -1,18 +1,24 @@
 stages:
   prepare:
-    cmd: '`'
+    cmd: python src/prepare_data.py
+    deps:
+    - data/raw.csv
+    - src/prepare_data.py
+    outs:
+    - data/processed.csv
+    - registry/train_stats.json
   train:
     cmd: python src/train.py
     deps:
     - data/processed.csv
     - src/train.py
     outs:
-    - models/model.joblib
+    - models
   evaluate:
     cmd: python src/evaluate.py
     deps:
     - data/processed.csv
-    - models/model.joblib
+    - models
     - src/evaluate.py
     outs:
-    - reports/metrics.json
+    - reports
