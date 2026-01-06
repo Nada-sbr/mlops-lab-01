@@ -24,7 +24,7 @@ jobs:
 
       - name: Exécuter pipeline ML via DVC
         run: dvc repro
-      
+
       - name: Vérifier métriques (Quality Gate F1)
         run: |
           python - << 'EOF'
@@ -32,7 +32,7 @@ jobs:
           with open("reports/metrics.json", "r") as f:
               metrics = json.load(f)
           f1 = float(metrics.get("f1", 0.0))
+          print(f"F1 detecte : {f1}")
           if f1 < 0.70:
-              raise SystemExit(f"F1={f1} trop faible")
-          print(f"F1={f1} validé")
+              raise SystemExit("F1 trop faible")
           EOF
