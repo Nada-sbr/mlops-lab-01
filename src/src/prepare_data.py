@@ -430,7 +430,10 @@ def main() -> None:
 
     print(f"[OK] Statistiques d'entraînement générées : {TRAIN_STATS_PATH}")
 
+    print("Chargement et prétraitement des données terminés avec succès.")
 
+
+print("test DVC")
 
 
 

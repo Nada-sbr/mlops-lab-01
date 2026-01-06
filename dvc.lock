@@ -9,8 +9,8 @@ stages:
       size: 27933
     - path: src/prepare_data.py
       hash: md5
-      md5: 78f66ce979e9195b0fb668933002ed5d
-      size: 7921
+      md5: f271fb4553328d314122a997debba59d
+      size: 7991
     outs:
     - path: data/processed.csv
       hash: md5
