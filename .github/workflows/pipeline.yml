@@ -33,7 +33,10 @@ jobs:
       - name: Installer dépendances
         run: |
           pip install -U pip
-          pip install "pathspec<0.12"
+          # On désinstalle d'abord pour éviter tout conflit de cache
+          pip uninstall -y dvc pathspec
+          # On installe la version stable de pathspec AVANT dvc
+          pip install "pathspec==0.11.2"
           pip install dvc pandas numpy scikit-learn joblib
         
 
