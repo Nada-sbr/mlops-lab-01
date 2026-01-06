@@ -432,8 +432,7 @@ def main() -> None:
 
     print("Chargement et prétraitement des données terminés avec succès.")
 
-
-print("test DVC")
+print("dvc ___ Preparing data v2")
 
 
 
