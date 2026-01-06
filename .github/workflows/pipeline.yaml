@@ -33,7 +33,9 @@ jobs:
       - name: Installer dépendances
         run: |
           pip install -U pip
+          pip install "pathspec<0.12"
           pip install dvc pandas numpy scikit-learn joblib
+        
 
 
       - name: Restaurer cache DVC
