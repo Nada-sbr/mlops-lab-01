@@ -18,8 +18,13 @@ jobs:
           pip install dvc pandas numpy scikit-learn joblib
       - name: Afficher le DAG DVC
         run: dvc dag
+
+      - name: Générer données brutes
+        run: python src/generate_data.py
+
       - name: Exécuter pipeline ML via DVC
         run: dvc repro
+      
       - name: Vérifier métriques (Quality Gate F1)
         run: |
           python - << 'EOF'
