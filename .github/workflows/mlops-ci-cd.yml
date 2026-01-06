@@ -16,6 +16,7 @@ jobs:
         with:
           python-version: ${{ vars.PY_VERSION }}
 
+      # 3️⃣ Cache pip pour accélérer les installations
       - name: Cache pip
         uses: actions/cache@v4
         with:
@@ -24,11 +25,13 @@ jobs:
           restore-keys: |
             pip-${{ runner.os }}-${{ vars.PY_VERSION }}-
 
+      # 4️⃣ Installer les dépendances Python et DVC
       - name: Installer dépendances
         run: |
           pip install -U pip
           pip install dvc pandas numpy scikit-learn joblib
 
+      # 5️⃣ Restaurer cache DVC (optionnel si cache DVC local)
       - name: Restaurer cache DVC
         uses: actions/cache@v4
         with:
@@ -37,15 +40,23 @@ jobs:
           restore-keys: |
             dvc-${{ runner.os }}-${{ vars.PY_VERSION }}-
 
+      # 6️⃣ Récupérer les données depuis DVC
+      - name: Récupérer les données DVC
+        run: dvc pull
+
+      # 7️⃣ Afficher le DAG du pipeline
       - name: Afficher le DAG DVC
         run: dvc dag
 
+      # 8️⃣ Générer les données brutes (si nécessaire)
       - name: Générer données brutes
         run: python src/generate_data.py
 
+      # 9️⃣ Reproduire le pipeline ML
       - name: Exécuter pipeline ML via DVC
         run: dvc repro
 
+      # 🔟 Vérification des métriques (Quality Gate F1)
       - name: Vérifier métriques (Quality Gate F1)
         run: |
           python - << 'EOF'
@@ -60,6 +71,7 @@ jobs:
           print("Quality Gate validé")
           EOF
 
+      # 1️⃣1️⃣ Upload des artefacts ML
       - name: Upload artefacts ML
         uses: actions/upload-artifact@v4
         with:
@@ -75,14 +87,17 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
+      # 1️⃣ Checkout du code
       - uses: actions/checkout@v4
 
+      # 2️⃣ Télécharger les artefacts validés
       - name: Télécharger artefacts validés
         uses: actions/download-artifact@v4
         with:
           name: ml-artifacts
           path: release_artifacts
 
+      # 3️⃣ CD simulé (déploiement SSH)
       - name: CD simulé (déploiement SSH)
         run: |
           echo "=== Phase CD (simulée) ==="
