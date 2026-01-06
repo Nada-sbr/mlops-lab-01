@@ -1,13 +1,21 @@
+# Virtual environment
 venv_mlops/
 __pycache__/
 *.pyc
+
+# Logs
 logs/
-#models/
-#data/
 
-# Ignore all CSVs
-#data/*.csv
+# Data (handled by DVC)
+data/
 
-# But NOT DVC metadata files
-#!data/*.dvc
-/models
+# Pipeline outputs (handled by DVC)
+models/
+reports/
+
+# DVC storage (cache / remote)
+dvc_storage/
+
+# Registry metadata
+registry/*.txt
+registry/*.json
